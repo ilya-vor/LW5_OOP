@@ -5,27 +5,29 @@ using namespace std;
 class MyClass {
 public:
     MyClass() {
-        std::cout << "[MyClass()]" << std::endl;
+        cout << "[MyClass()]" << endl;
     }
 
     ~MyClass() {
-        std::cout << "[~MyClass()]" << std::endl;
+        cout << "[~MyClass()]" << endl;
     }
 
     void doSomething() {
-        std::cout << "Doing something..." << std::endl;
+        cout << "Doing something..." << endl;
     }
 };
 
-void functionWithUniquePtr(std::unique_ptr<MyClass> ptr) {
+void functionWithUniquePtrDelete(unique_ptr<MyClass> ptr) {
     ptr->doSomething();
     // ptr выйдет из области видимости здесь и вызовется деструктор
 }
 
+unique_ptr<MyClass> functionWithUniquePtrNoDelete(unique_ptr<MyClass> ptr) {
+    ptr->doSomething();
+    return ptr;
+}
 
-
-std::shared_ptr<MyClass> functionWithSharedPtr() {
-    std::shared_ptr<MyClass> ptr = std::make_shared<MyClass>();
+shared_ptr<MyClass> functionWithSharedPtr(shared_ptr<MyClass> ptr) {
     ptr->doSomething();
     return ptr;
     // ptr все еще в области видимости, потому что это shared_ptr
@@ -33,34 +35,47 @@ std::shared_ptr<MyClass> functionWithSharedPtr() {
 }
 
 int main() {
+
+    setlocale(NULL, "RU");
+
     // Использование unique_ptr
-    std::cout << "Использование unique_ptr" << std::endl;
+    cout << "Использование unique_ptr" << endl;
     {
-        std::unique_ptr<MyClass> uniquePtr = std::make_unique<MyClass>();
+        unique_ptr<MyClass> uniquePtr = make_unique<MyClass>();
         uniquePtr->doSomething();
         // uniquePtr выйдет из области видимости здесь и вызовется деструктор
     }
 
-    std::cout << "Использование shared_ptr" << std::endl;
+    unique_ptr<MyClass> uniquePtr = make_unique<MyClass>();
+    uniquePtr = functionWithUniquePtrNoDelete(move(uniquePtr)); //не удалится, так как uniquePtr возвращаем
+                                                                //(передаем функции ответственность за время жизни объекта
+                                                                //и забираем ответственность при выходе из функции)
+
+    functionWithUniquePtrDelete(move(uniquePtr)); //удалится, так как uniquePtr не возвращаем 
+                                                  //(передаем функции ответственность за время жизни объекта
+                                                  //и не забираем ответственность при выходе из функции)
+
+    cout << "Использование shared_ptr" << endl;
 
     // Использование shared_ptr
+    shared_ptr<MyClass> sharedPtr1;
     {
-        std::shared_ptr<MyClass> sharedPtr = functionWithSharedPtr();
+        shared_ptr<MyClass> sharedPtr = make_shared<MyClass>();
+        sharedPtr1 = sharedPtr;
         sharedPtr->doSomething();
-        // sharedPtr выйдет из области видимости здесь, но объект MyClass останется,
-        // потому что на него все еще есть ссылка из main()
-    }
+        // sharedPtr выйдет из области видимости здесь, и на обьект MyClass будет 1 ссылка, поэтому обьект не удалится
+    } 
 
-    std::cout << "Использование shared_ptr с передачей в функцию" << std::endl;
+    cout << "Использование shared_ptr с передачей в функцию" << endl;
 
     // Использование shared_ptr с передачей в функцию
     {
-        std::shared_ptr<MyClass> sharedPtr = std::make_shared<MyClass>();
-        functionWithUniquePtr(std::move(sharedPtr));
-        // sharedPtr не доступен здесь, так как мы его передали в функцию functionWithUniquePtr
+        functionWithSharedPtr(move(sharedPtr1));
+        //Мы передали sharedPtr в функцию functionWithSharedPtr и объект удалился после вызова функции, так как на него
+        //не осталось ссылок после завершения функции
     }
 
-    std::cout << "End" << std::endl;
-
+    cout << "End" << endl;
+    
     return 0;
 }

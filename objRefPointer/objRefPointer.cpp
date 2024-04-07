@@ -40,19 +40,19 @@ int main()
         //[~Base()] id = 1 Удалился скопированный объект
     }//[~Base()] id = 1
 
-    printf("\n\n");
+    printf("\n\nfunc2(&obj)\n");
     {
         Base obj; //[Base()] id = 7
         func2(&obj); //[func1(Base * obj)]
     }//[~Base()] id = 7
 
-    printf("\n\n");
+    printf("\n\nfunc3(obj)\n");
     {
         Base obj; //[Base()] id = 4
         func3(obj); //[func1(Base & obj)]  
     }//[~Base()] id = 4
 
-    printf("\n\n");
+    printf("\n\nfunc1(d)\n");
     {
         Desc d;
         //[Base()] id = 0
@@ -63,7 +63,7 @@ int main()
         //[~Base()] id = 0 Удалился скопированный объект
     } //[~Desc()] id = 0 [~Base()] id = 0
 
-    printf("\n\n");
+    printf("\n\nfunc2(&d)\n");
     {
         Desc d;
         //[Base()] id = 9
@@ -71,7 +71,7 @@ int main()
         func2(&d); //[func1(Base * obj)]
     } //[~Desc()] id = 9 [~Base()] id = 9
 
-    printf("\n\n");
+    printf("\n\nfunc3(d)\n");
     {
         Desc d;
         //[Base()] id = 4
@@ -82,13 +82,13 @@ int main()
     //
     // Механизмы возврата объектов из функции
     //
-    printf("\n\n");
+    printf("\n\nfunc1()\n");
     {
         Base b; //[Base()] id = 78
         b = func1(); //[Base()] id = 58 [~Base()] id = 58
     }//[~Base()] id = 58
 
-    printf("\n\n");
+    printf("\n\nfunc2()\n");
     {
         Base* b;
         b = func2();
@@ -97,7 +97,7 @@ int main()
         //delete b; - ошибка, обьект уже удален
     }
 
-    printf("\n\n");
+    printf("\n\nfunc3()\n");
     {
         Base b; //[Base()] id = 5
         b = func3();
@@ -105,7 +105,7 @@ int main()
         //[~Base()] id = 45
     }//[~Base()] id = 45
     
-    printf("\n\n");
+    printf("\n\nfunc4()\n");
     {
         Base b; // [Base()] id = 81
         b = func4();
@@ -114,14 +114,14 @@ int main()
         //[~Base()] id = 27
     }//[~Base()] id = 27
 
-    printf("\n\n");
+    printf("\n\nfunc5()\n");
     {
         Base* b;
         b = func5();//[Base()] id = 27
         delete b;//[~Base()] id = 27
     }
     
-    printf("\n\n");
+    printf("\n\nfunc6()\n");
     {
         Base b;//[Base()] id = 61
         b = func6();//[Base()] id = 91

@@ -94,5 +94,7 @@ int main()
     //
     // Умные указатели unique_ptr и shared_ptr, их влияние на жизненный цикл объектов
     //
+
+    // Смотреть uniqueptr_sharedptr.cpp
 }
 
